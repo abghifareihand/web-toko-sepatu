@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('promo_codes', function (Blueprint $table) {
             $table->id();
 
-            $table->string('coode');
+            $table->string('code');
             $table->unsignedBigInteger('discount_amount');
 
             $table->softDeletes();

@@ -11,7 +11,7 @@ class ShoeSize extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'photo',
+        'size',
         'shoe_id',
     ];
 }
