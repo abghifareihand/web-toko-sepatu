@@ -41,7 +41,7 @@ class PromoCodeResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('code')
-                   ->label('Kode Promo')
+                    ->label('Kode Promo')
                     ->searchable(),
 
                 TextColumn::make('discount_amount')
@@ -53,6 +53,7 @@ class PromoCodeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
