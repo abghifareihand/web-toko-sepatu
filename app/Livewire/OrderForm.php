@@ -35,6 +35,73 @@ class OrderForm extends Component
         $this->grandTotalAmount = $shoe->price;
     }
 
+    public function updatedQuantity()
+    {
+        $this->validateOnly('quantity', [
+            'quantity' => 'required|integer|min:1|max:' . $this->shoe->stock,
+        ], [
+            'quantity.max' => 'Stock tidak tersedia!',
+        ]);
+
+        $this->calculateTotal();
+    }
+
+    protected function calculateTotal(): void
+    {
+        $this->subTotalAmount = $this->shoe->price * $this->quantity;
+        $this->grandTotalAmount = $this->subTotalAmount - $this->discount;
+    }
+
+    public function incrementQuantity()
+    {
+        if ($this->quantity < $this->shoe->stock) {
+            $this->quantity++;
+            $this->calculateTotal();
+        }
+    }
+
+    public function decrementQuantity()
+    {
+        if ($this->quantity > 1) {
+            $this->quantity--;
+            $this->calculateTotal();
+        }
+    }
+
+    public function updatedPromoCode()
+    {
+        $this->applyPromoCode();
+    }
+
+    public function applyPromoCode()
+    {
+        if (!$this->promoCode) {
+            $this->resetDiscount();
+            return;
+        }
+
+        $result = $this->orderService->applyPromoCode($this->promoCode, $this->subTotalAmount);
+
+        if (isset($result['error'])) {
+            session()->flash('error', $result['error']);
+            $this->resetDiscount();
+        } else {
+            session()->flash('message', 'Kode promo tersedia, yay!');
+            $this->discount = $result['discount'];
+            $this->calculateTotal();
+            $this->promoCodeId = $result['promoCodeId'];
+            $this->totalDiscountAmount = $result['discount'];
+        }
+    }
+
+    protected function resetDiscount()
+    {
+        $this->discount = 0;
+        $this->calculateTotal();
+        $this->promoCodeId = null;
+        $this->totalDiscountAmount = 0;
+    }
+
     public function render()
     {
         return view('livewire.order-form');
